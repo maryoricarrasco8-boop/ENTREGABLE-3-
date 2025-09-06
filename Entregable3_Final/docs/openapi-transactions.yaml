@@ -1,0 +1,109 @@
+openapi: 3.0.3
+info:
+  title: Transactions API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8083
+paths:
+  /transacciones/deposito:
+    post:
+      summary: Registrar un depósito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DepositRequest' }
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TransactionResponse' }
+        '400': { description: Validación fallida }
+  /transacciones/retiro:
+    post:
+      summary: Registrar un retiro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/WithdrawRequest' }
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TransactionResponse' }
+        '400': { description: Validación fallida }
+  /transacciones/transferencia:
+    post:
+      summary: Registrar una transferencia
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TransferRequest' }
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TransactionResponse' }
+        '400': { description: Validación fallida }
+  /transacciones/historial:
+    get:
+      summary: Consultar historial
+      parameters:
+        - in: query
+          name: accountId
+          schema: { type: string }
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TransactionResponse' }
+components:
+  schemas:
+    DepositRequest:
+      type: object
+      required: [accountId, amount, currency]
+      properties:
+        accountId: { type: string }
+        amount: { type: number }
+        currency: { type: string, example: PEN }
+    WithdrawRequest:
+      type: object
+      required: [accountId, amount, currency]
+      properties:
+        accountId: { type: string }
+        amount: { type: number }
+        currency: { type: string, example: PEN }
+    TransferRequest:
+      type: object
+      required: [sourceAccountId, targetAccountId, amount, currency]
+      properties:
+        sourceAccountId: { type: string }
+        targetAccountId: { type: string }
+        amount: { type: number }
+        currency: { type: string, example: PEN }
+    TransactionResponse:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        amount: { type: number }
+        currency: { type: string }
+        date: { type: string, format: date-time }
+        sourceAccountId: { type: string }
+        targetAccountId: { type: string, nullable: true }
+        status: { type: string }
+        reason: { type: string, nullable: true }

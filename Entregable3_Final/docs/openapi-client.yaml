@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: Client API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+paths:
+  /clients:
+    get:
+      summary: Listar clientes (opcional filtrar por lastName o email)
+      parameters:
+        - in: query
+          name: lastName
+          schema: { type: string }
+        - in: query
+          name: email
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Client' }
+    post:
+      summary: Crear cliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateClientRequest' }
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Client' }
+  /clients/{id}:
+    get:
+      summary: Obtener cliente por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Client' }
+        '404': { description: No encontrado }
+    put:
+      summary: Actualizar cliente
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateClientRequest' }
+      responses:
+        '200': { description: OK }
+    delete:
+      summary: Eliminar cliente
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: No Content }
+  /clients/document/{documentNumber}:
+    get:
+      summary: Obtener cliente por documento
+      parameters:
+        - in: path
+          name: documentNumber
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Client' }
+        '404': { description: No encontrado }
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        id: { type: string }
+        documentNumber: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string }
+        phone: { type: string }
+    CreateClientRequest:
+      type: object
+      required: [documentNumber, firstName, lastName]
+      properties:
+        documentNumber: { type: string, example: "74859632" }
+        firstName: { type: string, example: "Ana" }
+        lastName: { type: string, example: "Pérez" }
+        email: { type: string, example: "ana@example.com" }
+        phone: { type: string, example: "+51 999 888 777" }
+    UpdateClientRequest:
+      type: object
+      properties:
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string }
+        phone: { type: string }
